@@ -299,13 +299,13 @@ function CompanyProfile({ stockData, symbol, onNewSearch, loading }) {
                   {item.icon}
                   <span className="text-xs font-semibold">{item.label}</span>
                 </div>
-                <div className="text-right max-w-[160px] truncate">
+                <div className="text-right max-w-[160px] break-words whitespace-normal">
                   {item.isLink ? (
-                    <a href={item.value.startsWith('http') ? item.value : `https://${item.value}`} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#0066FF] hover:underline">
+                    <a href={item.value.startsWith('http') ? item.value : `https://${item.value}`} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#0066FF] hover:underline break-words whitespace-normal">
                       {item.value.replace(/^https?:\/\/(www\.)?/, '')}
                     </a>
                   ) : (
-                    <span className="text-xs font-bold text-slate-800">{item.value}</span>
+                    <span className="text-xs font-bold text-slate-800 break-words whitespace-normal">{item.value}</span>
                   )}
                 </div>
               </div>
@@ -320,9 +320,9 @@ function CompanyProfile({ stockData, symbol, onNewSearch, loading }) {
 /* ═══════════════════════════════════════════════════════════════════════
    METRIC CARD
    ═══════════════════════════════════════════════════════════════════════ */
-function MetricCard({ title, value, sub, icon, iconBg, accent }) {
+function MetricCard({ title, value, sub, icon, iconBg, accent, onClick }) {
   return (
-    <div className="relative overflow-hidden bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group border border-slate-200">
+    <div onClick={onClick} className="cursor-pointer relative overflow-hidden bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group border border-slate-200">
       <div className="h-[3px] w-full group-hover:h-[4px] transition-all duration-200" style={{ background: accent }} />
       <div className="px-5 py-5 flex items-center gap-4">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg} group-hover:scale-110 transition-transform duration-300`}>
@@ -466,7 +466,7 @@ export default function Overview() {
     if (!target) return;
     setLoading(true); setError("");
     try {
-      const res  = await fetch(`http://127.0.0.1:8000/stock/overview/${target}`);
+      const res  = await fetch(`http://127.0.0.1:8001/stock/overview/${target}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       setStockData(data); setSymbol(target);
@@ -484,7 +484,7 @@ export default function Overview() {
     if (!symbol || !stockData) return;
     setTimeRange(period);
     try {
-      const res  = await fetch(`http://127.0.0.1:8000/stock/prices/${symbol}?period=${period}`);
+      const res  = await fetch(`http://127.0.0.1:8001/stock/prices/${symbol}?period=${period}`);
       const data = await res.json();
       setPriceData(data.prices.map((p) => ({ date: p.date, close: p.close })));
     } catch (e) { console.error(e); }
@@ -499,6 +499,46 @@ export default function Overview() {
     { title: "EPS (Trailing)", value: stockData?.eps ? `₹${fmtNum(stockData.eps)}` : "—",               sub: "Earnings per share",  icon: <Zap size={22} className="text-amber-500"/>, iconBg: "bg-amber-50", accent: "#f59e0b" },
     { title: "Total Revenue",  value: fmtRev(stockData?.revenue),                                       sub: "Annual revenue",      icon: <Landmark size={22} className="text-indigo-500"/>, iconBg: "bg-indigo-50", accent: "#6366f1" },
   ];
+
+  const metricInfo = {
+    "Market Cap": {
+      meaning: "Total value of a company's shares in the stock market.",
+      formula: "Share Price × Total Shares Outstanding.",
+      importance: "Shows the size of the company (Large cap, Mid cap, Small cap)."
+    },
+    "P/E Ratio": {
+      meaning: "How much investors are willing to pay for ₹1 of earnings.",
+      formula: "Share Price / Earnings per Share (EPS).",
+      importance: "Common valuation metric; high P/E may mean growth expectations."
+    },
+    "ROE": {
+      meaning: "Return on Equity – how efficiently a company uses shareholder money.",
+      formula: "Net Income / Shareholders' Equity.",
+      importance: "Higher ROE often indicates profitable use of capital."
+    },
+    "Debt / Equity": {
+      meaning: "Leverage ratio measuring debt relative to equity.",
+      formula: "Total Liabilities / Shareholders' Equity.",
+      importance: "Indicates financial risk; high values mean more debt."
+    },
+    "Dividend Yield": {
+      meaning: "Annual dividend payment as a percentage of share price.",
+      formula: "(Dividend per Share / Share Price) × 100%.",
+      importance: "Shows income return; attractive for dividend investors."
+    },
+    "EPS (Trailing)": {
+      meaning: "Earnings per share based on the last 12 months.",
+      formula: "Net Income / Outstanding Shares.",
+      importance: "Basic measure of company profitability on a per-share basis."
+    },
+    "Total Revenue": {
+      meaning: "Total sales generated by the company in a year.",
+      formula: "Sum of all goods/services sold.",
+      importance: "Indicates company size and top-line growth."
+    }
+  };
+
+  const [activeMetric, setActiveMetric] = useState(null);
 
   // Quick Action Tickers
   const quickLinks = ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ITC", "LT"];
@@ -582,12 +622,25 @@ export default function Overview() {
 
             {/* 2. Metric Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-              {metrics.map((m) => <MetricCard key={m.title} {...m}/>)}
+              {metrics.map((m) => <MetricCard key={m.title} {...m} onClick={() => setActiveMetric(m.title)}/>)}
             </div>
 
             {/* 3. Price Chart */}
             <ChartPanel priceData={priceData} timeRange={timeRange} onTimeRange={handleTimeRange} stockData={stockData} />
             
+          </div>
+        </div>
+      )}
+
+      {/* explanation modal for metrics */}
+      {activeMetric && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-3">{activeMetric}</h3>
+            <p><strong>Meaning:</strong> {metricInfo[activeMetric].meaning}</p>
+            <p><strong>Formula:</strong> {metricInfo[activeMetric].formula}</p>
+            <p><strong>Why it matters:</strong> {metricInfo[activeMetric].importance}</p>
+            <button onClick={() => setActiveMetric(null)} className="mt-4 bg-[#0066FF] text-white px-4 py-2 rounded-lg">Close</button>
           </div>
         </div>
       )}

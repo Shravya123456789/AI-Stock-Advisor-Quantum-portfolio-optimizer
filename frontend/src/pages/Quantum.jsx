@@ -63,7 +63,7 @@ const TreemapCell = (props) => {
       <rect 
         x={x} y={y} width={width} height={height} 
         fill={fill || "#3b82f6"} 
-        stroke="#020617" strokeWidth={4} // Dark separation lines
+        stroke="#111827" strokeWidth={4} // Dark separation lines
         rx={6} // Smooth rounded corners
         className="transition-all duration-300 hover:brightness-110 cursor-crosshair"
       />
@@ -145,7 +145,7 @@ export default function Quantum() {
     setLoading(true); setError(""); setResult(null);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/quantum/optimize", {
+      const res = await fetch("http://127.0.0.1:8001/quantum/optimize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tickers: selectedStocks, risk_tolerance: 0.5 })
@@ -218,7 +218,7 @@ export default function Quantum() {
             </div>
         </div>
         
-        <div style={{ width: '100%', height: 400, position: 'relative' }} className="bg-[#020617] rounded-2xl border border-slate-800 p-4 shadow-inner">
+        <div style={{ width: '100%', height: 400, position: 'relative' }} className="bg-[#0a0e27] rounded-2xl border border-slate-800 p-4 shadow-inner">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 50 }}>
               <XAxis type="category" dataKey="x" allowDuplicatedCategory={false} axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8', fontWeight: 'bold'}} />
@@ -229,7 +229,7 @@ export default function Quantum() {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-[#020617] text-white p-4 border border-slate-700 shadow-2xl rounded-2xl text-xs z-50">
+                      <div className="bg-[#0a0e27] text-white p-4 border border-slate-700 shadow-2xl rounded-2xl text-xs z-50">
                         <p className="font-bold text-slate-400 mb-2 uppercase tracking-widest border-b border-slate-800 pb-2">{data.y} × {data.x}</p>
                         <p className="font-bold text-lg">Correlation: <span style={{color: colorScale(data.value)}}>{data.value.toFixed(2)}</span></p>
                       </div>
@@ -270,7 +270,15 @@ export default function Quantum() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] pb-20 font-sans selection:bg-amber-500/30">
+    <>
+      {/* enforce consistent font across modules and states */}
+      <style>{`body, html, #root, .font-sans { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }`}</style>
+
+      {/* Fixed full-screen background - covers entire viewport edge-to-edge */}
+      <div className="fixed inset-0 bg-[#0a0e27] -z-10" />
+      
+      {/* Main Quantum page content */}
+      <div className="relative min-h-screen w-full pb-20 font-sans selection:bg-amber-500/30" style={{ fontFamily: "'Inter', sans-serif" }}>
       
       {/* ── HIGH-TECH HEADER WITH YELLOW QUANTUM GRID ── */}
       <div className="text-white pt-16 pb-24 px-8 relative border-b border-slate-800" style={quantumGridStyle}>
@@ -304,7 +312,7 @@ export default function Quantum() {
               <div className="absolute inset-0 pointer-events-none opacity-30" style={quantumGridStyle}></div>
 
               {/* Search Header */}
-              <div className="p-6 border-b border-slate-800 bg-[#020617]/90 relative z-10">
+              <div className="p-6 border-b border-slate-800 bg-[#0a0e27]/90 relative z-10">
                 <div className="flex justify-between items-center mb-5">
                   <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <Cpu size={20} className="text-amber-400"/> NIFTY 50 Stocks
@@ -319,7 +327,7 @@ export default function Quantum() {
                   <Search className="absolute left-4 top-3.5 text-slate-500 group-focus-within:text-amber-400 transition-colors" size={18} />
                   <input 
                     type="text" placeholder="Search Nifty 50 tickers..."
-                    className="w-full pl-11 pr-4 py-3 bg-[#1e293b] text-white text-sm font-bold border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all placeholder-slate-500 shadow-inner"
+                    className="w-full pl-11 pr-4 py-2 bg-[#1e293b] text-white text-sm font-bold border border-slate-700 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all placeholder-slate-500 shadow-inner"
                     value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
@@ -334,7 +342,7 @@ export default function Quantum() {
                 {filteredStocks.length === 0 ? (
                    <div className="text-center py-10 text-slate-500 text-sm font-bold">No assets match your search.</div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     {filteredStocks.map(stock => {
                       const isSelected = selectedStocks.includes(stock);
                       return (
@@ -342,7 +350,7 @@ export default function Quantum() {
                           key={stock}
                           onClick={() => toggleStock(stock)}
                           disabled={!isSelected && selectedStocks.length >= 15}
-                          className={`relative flex items-center justify-between px-4 py-3.5 text-xs font-black rounded-xl transition-all duration-300
+                          className={`relative flex items-center justify-between px-2.5 py-1.5 text-[9px] font-black rounded-lg transition-all duration-300
                             ${isSelected 
                               ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-900 border border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.5)] transform scale-[1.03]" 
                               : "bg-[#1e293b] text-slate-400 border border-slate-700 hover:border-amber-500/50 hover:text-amber-400 shadow-sm"}
@@ -359,7 +367,7 @@ export default function Quantum() {
               </div>
 
               {/* Action Footer */}
-              <div className="p-6 border-t border-slate-800 bg-[#020617]/90 relative z-10">
+              <div className="p-6 border-t border-slate-800 bg-[#0a0e27]/90 relative z-10">
                 {error && (
                   <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold rounded-xl flex items-center gap-2">
                     <AlertTriangle size={16} className="shrink-0"/> {error}
@@ -394,18 +402,18 @@ export default function Quantum() {
                     <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-3">
                       <Grid size={22} className="text-amber-400" /> Capital Allocation Map
                     </h3>
-                    <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest bg-[#020617] px-4 py-2 rounded-xl border border-slate-800">
+                    <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest bg-[#0a0e27] px-4 py-2 rounded-xl border border-slate-800">
                        <span className="text-slate-300">Optimal Distributed Weights</span>
                     </div>
                   </div>
                   
                   {/* Treemap Container */}
-                  <div style={{ width: '100%', height: 500, position: 'relative' }} className="bg-[#020617] p-2">
+                  <div style={{ width: '100%', height: 500, position: 'relative' }} className="bg-[#0a0e27] p-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <Treemap
                         data={treeMapData}
                         dataKey="size"
-                        stroke="#020617"
+                        stroke="#111827"
                         fill="#334155"
                         content={<TreemapCell />}
                         isAnimationActive={true}
@@ -422,7 +430,7 @@ export default function Quantum() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-600/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-emerald-600/20 transition-all duration-700"></div>
                     
                     <h3 className="text-xl font-black text-white tracking-tight mb-2 flex items-center gap-3">
-                      <Activity className="text-emerald-400" size={24} /> Backtest vs NIFTY 50
+                      <Activity className="text-emerald-400" size={24} /> Portfolio vs NIFTY 50
                     </h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8 border-b border-slate-800 pb-4">
                       Historical Equity Curve (Indexed to NAV 100)
@@ -448,7 +456,7 @@ export default function Quantum() {
                           <XAxis dataKey="date" hide />
                           <YAxis domain={['auto', 'auto']} axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#94a3b8', fontWeight: 700}} width={45} />
                           <RechartsTooltip 
-                            contentStyle={{borderRadius: '16px', border: '1px solid #334155', boxShadow: '0 20px 40px -10px rgb(0 0 0 / 0.5)', backgroundColor: '#020617', color: '#fff'}}
+                            contentStyle={{borderRadius: '16px', border: '1px solid #334155', boxShadow: '0 20px 40px -10px rgb(0 0 0 / 0.5)', backgroundColor: '#111827', color: '#fff'}}
                             itemStyle={{fontWeight: '900', color: '#f8fafc'}}
                             labelStyle={{color: '#94a3b8', marginBottom: '8px', borderBottom: '1px solid #1e293b', paddingBottom: '6px', fontWeight: 'bold'}}
                           />
@@ -500,7 +508,7 @@ export default function Quantum() {
 
                 {/* ── MONTE CARLO FORECAST ── */}
                 {result.monte_carlo && (
-                  <div className="bg-[#020617] text-white p-8 rounded-3xl shadow-2xl border border-slate-800 relative overflow-hidden mt-8">
+                  <div className="bg-[#0a0e27] text-white p-8 rounded-3xl shadow-2xl border border-slate-800 relative overflow-hidden mt-8">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-600/10 blur-[120px] rounded-full pointer-events-none"></div>
                     
                     <div className="relative z-10">
@@ -552,7 +560,8 @@ export default function Quantum() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

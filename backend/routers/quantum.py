@@ -8,11 +8,11 @@ import yfinance as yf
 
 # ---- ENGINE IMPORTS ----
 # Ensure these files exist in your project.
-from backend.portfolio.quantum.run_quantum import run_quantum_optimization
-from backend.portfolio.allocation.weight_engine import allocate_weights
-from backend.portfolio.backtest.backtest_engine import run_backtest
-from backend.portfolio.benchmark.nifty_compare import compare_with_nifty
-from backend.portfolio.simulation.monte_carlo import run_monte_carlo
+from portfolio.quantum.run_quantum import run_quantum_optimization
+from portfolio.allocation.weight_engine import allocate_weights
+from portfolio.backtest.backtest_engine import run_backtest
+from portfolio.benchmark.nifty_compare import compare_with_nifty
+from portfolio.simulation.monte_carlo import run_monte_carlo
 
 router = APIRouter(prefix="/quantum", tags=["Quantum Portfolio"])
 

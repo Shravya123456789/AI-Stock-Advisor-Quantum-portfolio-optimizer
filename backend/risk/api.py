@@ -4,9 +4,9 @@ from fastapi import APIRouter, HTTPException
 import pandas as pd
 import yfinance as yf
 
-from backend.risk.cvar import compute_cvar
-from backend.risk.drawdown import compute_max_drawdown
-from backend.risk.liquidity import compute_amihud_illiquidity
+from risk.cvar import compute_cvar
+from risk.drawdown import compute_max_drawdown
+from risk.liquidity import compute_amihud_illiquidity
 
 router = APIRouter(prefix="/risk", tags=["Risk"])
 

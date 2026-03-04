@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import Routers
-from backend.routers.quantum import router as quantum_router
-from backend.risk.api import router as risk_router
-from backend.routers.stocks import router as stocks_router
+from routers.quantum import router as quantum_router
+from risk.api import router as risk_router
+from routers.stocks import router as stocks_router
 
 app = FastAPI(title="FinNet Backend")
 

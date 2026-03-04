@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { 
   TrendingUp, Target, ShieldAlert, CheckCircle2, 
-  BrainCircuit, CalendarClock, BarChart3, Download, Zap, Lock
+  BrainCircuit, CalendarClock, BarChart3, Zap, Lock
 } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -253,7 +253,6 @@ export default function Prediction() {
 
   return (
     <div className="min-h-screen bg-[#F3F6FB] pb-20 font-sans">
-      
       {/* ── STICKY HEADER ── */}
       <div className="bg-white/90 backdrop-blur-xl border-b border-slate-200 pt-6 pb-4 px-6 sticky top-[60px] z-30 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -293,7 +292,7 @@ export default function Prediction() {
             </h2>
             
             {/* 🟢 BUG FIX: Replaced flex-1 with a strict absolute height to prevent Recharts from collapsing to 0px */}
-            <div style={{ width: '100%', height: 400 }}>
+            <div style={{ width: '100%', height: 400 }} data-chart-export>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={forecast.chartData} margin={{ top: 20, right: 30, left: 10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -374,7 +373,7 @@ export default function Prediction() {
         <div className="bg-slate-900 rounded-3xl p-8 sm:p-10 text-white relative overflow-hidden shadow-2xl border border-slate-800 mt-4">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none"></div>
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
             
             {/* Left: Verdict Badge */}
             <div className="lg:col-span-1 border-b lg:border-b-0 lg:border-r border-slate-700 pb-6 lg:pb-0 pr-0 lg:pr-6 flex flex-col justify-center">
@@ -407,17 +406,14 @@ export default function Prediction() {
               </div>
             </div>
 
-            {/* Right: Action Button */}
-            <div className="lg:col-span-1 flex flex-col justify-center items-start lg:items-end border-t lg:border-t-0 lg:border-l border-slate-700 pt-6 lg:pt-0 pl-0 lg:pl-6">
-               <button className="bg-white text-slate-900 px-6 py-4 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-slate-100 transition-colors w-full shadow-[0_0_20px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2">
-                 <Download size={18}/> Export PDF
-               </button>
-               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-4 text-center lg:text-right w-full flex items-center justify-center lg:justify-end gap-1">
-                 <Lock size={12}/> Model v3.1
-               </p>
-            </div>
 
           </div>
+
+          {/* model version footer */}
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-6 text-center">
+            <Lock size={12} className="inline-block mr-1"/> Model v3.1
+          </p>
+
         </div>
 
       </div>
